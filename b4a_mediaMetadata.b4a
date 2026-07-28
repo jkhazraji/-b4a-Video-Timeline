@@ -1,28 +1,3 @@
-﻿Build1=Default,b4a.example
-File1=big_buck_bunny.mp4
-File2=daynightsong2.mp4
-File3=genius-girl.mp4
-File4=Layout.bal
-File5=loreen-tattoo.mp4
-FileGroup1=Default Group
-FileGroup2=Default Group
-FileGroup3=Default Group
-FileGroup4=Default Group
-FileGroup5=Default Group
-Group=Default Group
-Library1=core
-Library2=javaobject
-Library3=reflection
-Library4=xui
-Library5=exoplayer
-ManifestCode='This code will be applied to the manifest file during compilation.~\n~'You do not need to modify it in most cases.~\n~'See this link for for more information: https://www.b4x.com/forum/showthread.php?p=78136~\n~AddManifestText(~\n~<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="35"/>~\n~<supports-screens android:largeScreens="true" ~\n~    android:normalScreens="true" ~\n~    android:smallScreens="true" ~\n~    android:anyDensity="true"/>)~\n~SetApplicationAttribute(android:icon, "@drawable/icon")~\n~SetApplicationAttribute(android:label, "$LABEL$")~\n~CreateResourceFromFile(Macro, Themes.LightTheme)~\n~'End of default text.~\n~SetApplicationAttribute(android:largeHeap, "true")~\n~CreateResource(layout, video_timeline.xml, <?xml version="1.0" encoding="utf-8"?>~\n~<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"~\n~    android:id="@+id/horizontal_scroll_view"~\n~    android:layout_width="fill_parent"~\n~    android:layout_height="wrap_content"~\n~    android:layout_centerHorizontal="true"~\n~    android:layout_gravity="bottom"~\n~    android:layout_marginLeft="10dp"~\n~    android:layout_marginRight="10dp"~\n~    android:layout_marginBottom="30dp"~\n~    android:clickable="true"~\n~    android:focusable="true"~\n~    android:scrollbars="none">~\n~~\n~    <LinearLayout~\n~        android:id="@+id/linear_layout"~\n~        android:layout_width="match_parent"~\n~        android:layout_height="wrap_content"~\n~        android:layout_marginTop="10dp"~\n~        android:layout_marginBottom="10dp"~\n~        android:orientation="horizontal" />~\n~~\n~</HorizontalScrollView>)
-Module1=MediaMetadata
-Module2=Starter
-NumberOfFiles=5
-NumberOfLibraries=5
-NumberOfModules=2
-Version=13.5
-@EndOfDesignText@
 #Region  Project Attributes 
 	#ApplicationLabel: Video Timeline 
 	#VersionCode: 1
