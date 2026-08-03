@@ -8,7 +8,6 @@
 	#CanInstallToExternalStorage: False
 	
 #End Region
-'Video Time Line (c)2026 JM Kareem 
 #Region  Activity Attributes 
 	#FullScreen: False
 	#IncludeTitle: True
@@ -22,9 +21,6 @@ Sub Process_Globals
 	
 	Private hscrollView As JavaObject
 	Private LinearLayout1 As JavaObject
-	
-	
-	
 	Private ThumbnailPositions As List  ' Store frame positions for each thumbnail
 	Private CurrentThumbnailIndex As Int = -1
 	Private IsPlaying As Boolean = False
@@ -38,7 +34,7 @@ Sub Process_Globals
 End Sub
 
 Sub Globals
-	'These global variables will be redeclared each time the activity is created.
+	
 	Private imgView As ImageView
 	Private thumb As ImageView
 	Private exoPlayer As SimpleExoPlayerView
@@ -49,40 +45,32 @@ End Sub
 
 Sub Activity_Create(FirstTime As Boolean)
 	Activity.LoadLayout("Layout")
-'	If FirstTime Then
+
 		player1.Initialize("player")
 		exoPlayer.Player=player1
 		player1.Pause
 		player1.Prepare(player1.CreateFileSource(File.DirAssets,mediaFile))
-'	End If
+
 	
 	imgView.Initialize("")
 	mmetadata.Initialize
-	'ScaleType.InitializeStatic("android.widget.ImageView$ScaleType")
 	If Not(File.Exists(File.DirInternal,mediaFile)) Then
 		File.Copy(File.DirAssets,mediaFile,File.DirInternal,mediaFile)
 	End If
 	mmetadata.ProcessMediaFile(File.DirInternal,mediaFile)
-	Log(mmetadata.GetTotalFrames)
-	Log(mmetadata.GetHasAudio)
-	
-	
 	hscrollView =InflateLayout("video_timeline", Activity) ' Note: No .xml extension
 	hscrollView.RunMethod("setSmoothScrollingEnabled", Array(True))
 	Activity.AddView(hscrollView, 0%x, 60%y, 100%x, 90%y)
 	LinearLayout1=hscrollView.RunMethod("findViewById",Array(GetViewResourceId("linear_layout")))
-	'LoadThumbnails
-	
-	'player1.Play
-	' Load thumbnails and store positions
+		
 	ThumbnailPositions.Initialize
 	LoadThumbnailsWithPositions
     
-	' Setup sync timer
+	
 	TimerSync.Initialize("TimerSync", 100)  ' Update every 100ms
 	TimerSync.Enabled = False
     
-	' Play button
+	
 	
 	btnPlay.Initialize("btnPlay")
 	btnPlay.Text = "Play"
@@ -133,16 +121,14 @@ Sub LoadThumbnailsWithPositions
 		second = second + StepSize
 	Loop
 
-	Log("Loaded " & ThumbnailPositions.Size & " thumbnails")
+	
 End Sub
 
-' Sync video with scroll view
 Sub TimerSync_Tick
 	If IsPlaying And player1.IsPlaying Then
 		Dim CurrentPosition As Int = player1.Position  ' in milliseconds
 		Dim CurrentSecond As Int = CurrentPosition / 1000
         
-		' Find the closest thumbnail position
 		Dim targetIndex As Int = FindClosestThumbnail(CurrentSecond)
         
 		If targetIndex <> CurrentThumbnailIndex Then
@@ -151,7 +137,6 @@ Sub TimerSync_Tick
 			ScrollToThumbnail(targetIndex)
 		End If
         
-		' Update main image view (optional - show current frame)
 		UpdateMainImage(CurrentSecond)
 	End If
 End Sub
@@ -172,50 +157,38 @@ Sub FindClosestThumbnail(second As Int) As Int
 End Sub
 Sub ScrollToThumbnail(index As Int)
 	If index >= 0 Then
-		' Get child count from JavaObject
+		
 		Dim childCount As Int = LinearLayout1.RunMethod("getChildCount", Null)
         
 		If index < childCount Then
-			' Get the child view at the specified index
 			Dim targetView As JavaObject = LinearLayout1.RunMethod("getChildAt", Array(index))
-            
-			If targetView <> Null Then
-				' Get the left position of the target view
+            If targetView <> Null Then
 				Dim targetX As Int = targetView.RunMethod("getLeft", Null)
-                
-				' Get the width of the HorizontalScrollView
-				Dim scrollWidth As Int = hscrollView.RunMethod("getWidth", Null)
-                
-				' Calculate scroll position to center the thumbnail
-				Dim scrollX As Int = targetX - (scrollWidth / 2) + (ThumbnailWidth / 2)
+            	Dim scrollWidth As Int = hscrollView.RunMethod("getWidth", Null)
+            	Dim scrollX As Int = targetX - (scrollWidth / 2) + (ThumbnailWidth / 2)
 				If scrollX < 0 Then scrollX = 0
-                
-				' Animate scroll using smoothScrollTo
-				hscrollView.RunMethod("smoothScrollTo", Array(scrollX, 0))
-				Log($"scrolling to ${scrollX}"$)
+                	hscrollView.RunMethod("smoothScrollTo", Array(scrollX, 0))
+				
 			End If
 		End If
 	End If
 End Sub
-' Highlight a thumbnail by index (using JavaObject for LinearLayout)
+
 Sub HighlightThumbnail(index As Int)
 	Dim count As Int = LinearLayout1.RunMethod("getChildCount", Null)
     
-	' Reset all thumbnails
-	For i = 0 To count - 1
+		For i = 0 To count - 1
 		Dim child As JavaObject = LinearLayout1.RunMethod("getChildAt", Array(i))
 		If child <> Null Then
 			' Remove background/border
 			child.RunMethod("setBackground", Array(Null))
 		End If
 	Next
-    
-	' Highlight the selected one
+  
 	If index >= 0 And index < count Then
 		Log(index)
 		Dim child As JavaObject = LinearLayout1.RunMethod("getChildAt", Array(index))
 		If child <> Null Then
-			' Create a colored border
 			Dim border As JavaObject
 			border.InitializeNewInstance("android.graphics.drawable.GradientDrawable", Null)
 			border.RunMethod("setStroke", Array(3dip, Colors.Red))
@@ -235,7 +208,7 @@ Sub UpdateMainImage(second As Int)
 	End Try
 End Sub
 
-' MediaPlayer events
+
 Sub MediaPlayer_Ready
 	Log("MediaPlayer ready")
 End Sub
@@ -246,16 +219,16 @@ Sub MediaPlayer_Complete
 	Log("Playback complete")
 End Sub
 
-' Play/Pause button
+
 Sub btnPlay_Click
 	If IsPlaying Then
-		' Pause
+		
 		player1.Pause
 		IsPlaying = False
 		TimerSync.Enabled = False
 		btnPlay.Text = "Play"
 	Else
-		' Play
+		
 		player1.Play
 		IsPlaying = True
 		TimerSync.Enabled = True
@@ -263,7 +236,6 @@ Sub btnPlay_Click
 	End If
 End Sub
 
-' Thumbnail click - seek to position
 Sub thumb_Click
 	Dim thumb As ImageView = Sender
 	Dim second As Int = thumb.Tag   ' Tag is now already in seconds
@@ -283,36 +255,30 @@ Sub LoadThumbnails
 	Dim ThumbnailHeight As Int = 80dip
 	Dim Spacing As Int = 1dip
 	Dim duration As Long
-	'duration=mmetadata.GetDuration   ' String -> Long, same crash risk
 	Dim duration As Long = mmetadata.SafeParseInt(mmetadata.GetDuration, 0)
-	'Long newPosition = totalDuration * i * 10L;
 	Dim fact As Long=10
 	Dim newPosition As Long
 	
 	For i = 0 To TotalFrames - 1 'Step 5
 		newPosition= duration * i * fact
 		Dim bmp As Bitmap = mmetadata.getFrameBitmapScaled(newPosition, ThumbnailWidth, ThumbnailHeight)
-        'Log($"Getting bitmp at frame: ${i}"$)
-		If bmp.IsInitialized Then
+      	If bmp.IsInitialized Then
 			
 			thumb.Initialize("thumb")
 			
 			thumb.Bitmap = bmp
 			thumb.Tag = i
          
-			' Method 1: Using JavaObject to create LayoutParams with margins
 			Dim lp As JavaObject
 			lp.InitializeNewInstance("android.widget.LinearLayout$LayoutParams", _
                 Array(ThumbnailWidth, ThumbnailHeight))
             
-			' Set margins
 			Dim marginLeft As Int = Spacing
 			Dim marginTop As Int = 5dip
 			Dim marginRight As Int = Spacing
 			Dim marginBottom As Int = 5dip
 			lp.RunMethod("setMargins", Array(marginLeft, marginTop, marginRight, marginBottom))
             
-			' Add view
 			Dim linearJO As JavaObject = LinearLayout1
 			linearJO.RunMethod("addView", Array(thumb, lp))
 		End If
@@ -323,14 +289,12 @@ Sub InflateLayout(LayoutName As String, Parent As Panel) As View
 	Dim context As JavaObject
 	context.InitializeContext
 
-	' Get Resources and LayoutInflater
 	Dim resources As JavaObject
 	resources = context.RunMethod("getResources", Null)
     
 	Dim inflater As JavaObject
 	inflater = context.RunMethod("getSystemService", Array("layout_inflater"))
 
-	' Get the resource ID (e.g., R.layout.my_layout)
 	Dim resName As String = LayoutName.Replace(".xml", "") ' Remove .xml extension
 	Dim resID As Int = resources.RunMethod("getIdentifier", Array(resName, "layout",Application.PackageName))
     
@@ -339,13 +303,8 @@ Sub InflateLayout(LayoutName As String, Parent As Panel) As View
 		Return Null
 	End If
 
-	' Inflate using the resource ID
 	Dim view As JavaObject
 	view = inflater.RunMethod("inflate", Array(resID, Parent, False))
-
-	'Auto-tag all child views with their IDs
-	'AutoTagViews(view, context)
-    
 
 	Return view
 End Sub
@@ -358,10 +317,8 @@ Sub GetViewResourceId(ViewName As String) As Int
 	Return resources.RunMethod("getIdentifier", Array(ViewName, "id", pkg))
 End Sub
 Sub getDrawable(drawableName As String) As JavaObject
-	' Get the animated vector drawable resource ID
 	Dim resId As Int = GetResourceId(drawableName, "drawable")
     
-	' Load the drawable
 	Dim resources As JavaObject
 	resources.InitializeContext.RunMethodJO("getResources", Null)
 	Dim drawable As JavaObject = resources.RunMethod("getDrawable", Array(resId))
@@ -375,37 +332,10 @@ Sub GetResourceId(name As String, resType As String) As Int
         Array(name, resType, Application.PackageName))
 End Sub
 
-#if code
-Sub Activity_Create(FirstTime As Boolean)
-	Activity.LoadLayout("Layout")
-	
-	animationDrawable.InitializeStatic("android.graphics.drawable.AnimationDrawable")
-	'parentPanel.Color = xui.Color_Green
-	Dim inflatedView As View =	InflateLayout("main_layout", Activity) ' Note: No .xml extension
-	Activity.AddView(inflatedView,0,0,100%x, 100%y)
-	Dim btnSwitch As Button
-	btnSwitch.Initialize("btnSwitch")
-	btnSwitch=constraintlayout.As(JavaObject).RunMethod("findViewById" , Array(GetViewResourceId	("btnSwitch")))
-	
-	Dim event As Object = btnSwitch.As(JavaObject).CreateEventFromUI	("android.view.View.OnClickListener","btnswitch",Null)
-	btnSwitch.As(JavaObject).RunMethod("setOnClickListener",Array(event))	
-End Sub
-Sub btnswitch_event(MethodName As String, Args() As Object)
-	Log(MethodName)
-	Log(Args(0)
-
-End Sub
-
-#end if
-
 Sub Activity_Resume
 
 End Sub
 
 Sub Activity_Pause (UserClosed As Boolean)
 
-End Sub
-
-Sub Button1_Click
-	xui.MsgboxAsync("Hello world!", "B4X")
 End Sub
